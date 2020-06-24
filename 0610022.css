@@ -13,6 +13,12 @@
     left: 600px;
 }
 
+#rocketContainer {
+    width: 1200px;
+    height: 800px;
+    position: absolute;
+}
+
 .enemy {
     background-image: url('./enemy.png');
     width: 50px;
@@ -20,4 +26,11 @@
     position: absolute;
     top: 100px;
     left: 600px;
+}
+
+.rocket {
+    background-image: url('./rocket.png');
+    width: 10px;
+    height: 16px;
+    position: absolute;
 }
