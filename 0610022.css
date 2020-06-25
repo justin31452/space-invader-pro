@@ -25,25 +25,18 @@
     position: absolute;
 }
 
-#menu {
+#infoContainer {
     background-image: url('./background.jpg');
     width: 1200px;
     height: 800px;
     position: absolute;
 }
 
-#intro {
-    color: white;
-    text-align: center;
-    font-size: xx-large;
-}
-
-#lose {
-    color: white;
-    text-align: center;
+.info {
     margin-top: 40%;
+    color: white;
+    text-align: center;
     font-size: xx-large;
-    visibility: hidden;
 }
 
 .enemy {

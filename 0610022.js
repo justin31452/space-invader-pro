@@ -17,9 +17,10 @@ const rocket = {
 const MENU = 0;
 const GAME = 1;
 const LOSE = 2;
+const TRANSITION = 3;
 
 var config = {
-    level: 0,
+    level: 1,
     score: 0
 }
 
@@ -53,8 +54,7 @@ document.onkeydown = function(e) {
     //menu
     else if (e.keyCode == 32 && (status == MENU || status == LOSE)) {
         status = GAME;
-        document.getElementById("menu").style.visibility = "hidden";
-        document.getElementById("lose").style.visibility = "hidden";
+        document.getElementById("infoContainer").style.visibility = "hidden";
         drawship();
         createEnemy();
         loop();
@@ -194,24 +194,22 @@ function reset() {
         lives: 1
     };
     config = {
-        level: 0,
+        level: 1,
         score: 0
     };
 }
 
 function lose() {
-    document.getElementById("menu").style.visibility = "visible";
-    document.getElementById("intro").style.visibility = "hidden";
-    document.getElementById("lose").style.visibility = "visible";
-    document.getElementById("lose").innerHTML =
-        "<p>GAME OVER!!!</p>\
-        <p>YOU SCORED " + config.score +
-        "</p><p>PRESS SPACE TO START AGAIN!!</p>"
+    document.getElementById("infoContainer").style.visibility = "visible";
+    document.getElementById("infoContainer").innerHTML =
+        " <div class='info'>\
+            <p>GAME OVER!!!</p>\
+            <p>YOU REACHED LEVEL " + config.level + "</p>\
+            <p>YOU SCORED " + config.score + "</p>\
+            <p>PRESS SPACE TO START AGAIN!!</p>\
+        </div>"
     reset();
 }
-
-// createEnemy();
-// loop();
 
 function loop() {
     drawRocket();
