@@ -4,28 +4,31 @@ const enemy = {
     width: 50,
     height: 50,
     damage: 1,
-    speed: 5,
-    score: 10
+    speed: 0.5,
+    score: 10,
+    lives: 1
 }
 const enemy2 = {
     width: 50,
     height: 50,
     damage: 3,
-    speed: 3,
-    score: 20
+    speed: 0.3,
+    score: 20,
+    lives: 3
 }
 const enemy3 = {
     width: 50,
     height: 50,
     damage: 1,
-    speed: 2,
-    score: 30
+    speed: 0.1,
+    score: 30,
+    lives: 1
 }
 const rocket = {
     width: 10,
     height: 16,
     damage: 1,
-    speed: 30
+    speed: 10
 }
 
 const MENU = 0;
@@ -42,7 +45,7 @@ var ship = {
     height: 50,
     top: 700,
     left: 600,
-    speed: 20,
+    speed: 2,
     lives: 1
 }
 var rockets = [];
@@ -50,23 +53,39 @@ var enemies = [];
 var status = MENU;
 var enemySwing = 0;
 
-document.onkeydown = function(e) {
+var keys = {
+    space: 0,
+    right: 0,
+    left: 0
+};
+
+var mutex = {
+    space: 1,
+    left: 1,
+    right: 1
+};
+
+window.addEventListener("keydown", function keydown(e) {
     //<-
+    console.log("onkeydown");
     if (e.keyCode == 37) {
-        if (ship.left > ship.speed) {
-            ship.left -= ship.speed;
-            drawship();
+        keys.left = 1;
+        if (mutex.left == 1) {
+            mutex.left--;
+            moveShip("left");
         }
     }
     //->
-    else if (e.keyCode == 39) {
-        if (ship.left + ship.width < 1200 + ship.speed) {
-            ship.left += ship.speed;
-            drawship();
+    if (e.keyCode == 39) {
+        keys.right = 1;
+        if (mutex.right == 1) {
+            mutex.right--;
+            moveShip("right");
         }
     }
     //menu
-    else if (e.keyCode == 32) {
+    if (e.keyCode == 32) {
+        keys.space = 1;
         if (status == MENU) {
             status = TRANSITION;
         } else if (status == LOSE) {
@@ -75,20 +94,22 @@ document.onkeydown = function(e) {
             nextLevel();
             status = GAME;
         } else if (status == GAME) {
-            rockets.push({
-                left: ship.left + 25,
-                top: ship.top + 10,
-                lives: 1
-            });
-            rockets.push({
-                left: ship.left,
-                top: ship.top + 10,
-                lives: 1
-            });
-            drawRocket();
+            if (mutex.space == 1) {
+                mutex.space--;
+                createRocket();
+            }
         }
     }
-}
+});
+
+window.addEventListener("keyup", function keyup(e) {
+    if (e.keyCode == 32)
+        keys.space = 0;
+    else if (e.keyCode == 37)
+        keys.left = 0;
+    else if (e.keyCode == 39)
+        keys.right = 0;
+});
 
 function DeathDetection() {
     for (var e = 0; e < enemies.length; e++) {
@@ -166,6 +187,24 @@ function createEnemy() {
     }
 }
 
+function createRocket() {
+    rockets.push({
+        left: ship.left + 25,
+        top: ship.top + 10,
+        lives: 1
+    });
+    rockets.push({
+        left: ship.left,
+        top: ship.top + 10,
+        lives: 1
+    });
+    drawRocket();
+    if (keys.space)
+        setTimeout(createRocket, 250);
+    else
+        mutex.space = 1;
+}
+
 function drawEnemy() {
     document.getElementById("enemyContainer").innerHTML = "";
     for (var i = 0; i < enemies.length; i++) {
@@ -189,8 +228,8 @@ function drawRocket() {
 
 function moveEnemy() {
     //console.log(enemySwing);
-    if (enemySwing > 12)
-        enemySwing = -12;
+    if (enemySwing > 50)
+        enemySwing = -50;
     for (var i = 0; i < enemies.length; i++) {
         enemies[i].top += enemy.speed;
         if (enemySwing > 0) {
@@ -205,6 +244,28 @@ function moveEnemy() {
 function moveRocket() {
     for (var i = 0; i < rockets.length; i++)
         rockets[i].top -= rocket.speed;
+}
+
+function moveShip(dir) {
+    if (dir == "left") {
+        if (ship.left > ship.speed) {
+            ship.left -= ship.speed;
+            drawship();
+            if (keys.left)
+                setTimeout(moveShip, 100, dir);
+            else
+                mutex.left = 1;
+        }
+    } else if (dir == "right") {
+        if (ship.left + ship.width < 1200 + ship.speed) {
+            ship.left += ship.speed;
+            drawship();
+            if (keys.right)
+                setTimeout(moveShip, 100, dir);
+            else
+                mutex.right = 1;
+        }
+    }
 }
 
 function drawship() {
@@ -292,5 +353,5 @@ function FSM() {
         lose();
     else if (status == GAME)
         gameloop();
-    setTimeout(FSM, 100);
+    setTimeout(FSM, 16);
 }
