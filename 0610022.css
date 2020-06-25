@@ -6,7 +6,7 @@
 
 #status {
     color: white;
-    top: 750px;
+    top: 700px;
     left: 1000px;
     position: absolute;
 }
@@ -25,6 +25,12 @@
 }
 
 #rocketContainer {
+    width: 1200px;
+    height: 800px;
+    position: absolute;
+}
+
+#bulletContainer {
     width: 1200px;
     height: 800px;
     position: absolute;
@@ -120,6 +126,13 @@ progress::-webkit-progress-value {
 .attack {
     background-image: url('./attack.png');
     width: 16px;
+    height: 16px;
+    position: absolute;
+}
+
+.bullet {
+    background-image: url('./bullet.png');
+    width: 7px;
     height: 16px;
     position: absolute;
 }
