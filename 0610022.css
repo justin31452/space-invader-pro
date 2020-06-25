@@ -25,6 +25,27 @@
     position: absolute;
 }
 
+#menu {
+    background-image: url('./background.jpg');
+    width: 1200px;
+    height: 800px;
+    position: absolute;
+}
+
+#intro {
+    color: white;
+    text-align: center;
+    font-size: xx-large;
+}
+
+#lose {
+    color: white;
+    text-align: center;
+    margin-top: 40%;
+    font-size: xx-large;
+    visibility: hidden;
+}
+
 .enemy {
     background-image: url('./enemy.png');
     width: 50px;

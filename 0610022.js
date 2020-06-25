@@ -4,18 +4,24 @@ const enemy = {
     width: 50,
     height: 50,
     damage: 1,
-    speed: 10
+    speed: 10,
+    score: 10
 }
 const rocket = {
-        width: 10,
-        height: 16,
-        damage: 1,
-        speed: 5
-    }
-    //status
+    width: 10,
+    height: 16,
+    damage: 1,
+    speed: 10
+}
+
 const MENU = 0;
 const GAME = 1;
 const LOSE = 2;
+
+var config = {
+    level: 0,
+    score: 0
+}
 
 var ship = {
     width: 50,
@@ -23,7 +29,7 @@ var ship = {
     top: 700,
     left: 600,
     speed: 10,
-    lives: 3
+    lives: 1
 }
 var rockets = [];
 var enemies = [];
@@ -34,7 +40,6 @@ document.onkeydown = function(e) {
     if (e.keyCode == 37) {
         if (ship.left > ship.speed) {
             ship.left -= ship.speed;
-            console.log(ship.left);
             drawship();
         }
     }
@@ -42,12 +47,20 @@ document.onkeydown = function(e) {
     else if (e.keyCode == 39) {
         if (ship.left + ship.width < 1200 + ship.speed) {
             ship.left += ship.speed;
-            console.log(ship.left);
             drawship();
         }
     }
+    //menu
+    else if (e.keyCode == 32 && (status == MENU || status == LOSE)) {
+        status = GAME;
+        document.getElementById("menu").style.visibility = "hidden";
+        document.getElementById("lose").style.visibility = "hidden";
+        drawship();
+        createEnemy();
+        loop();
+    }
     //space
-    else if (e.keyCode == 32) {
+    else if (e.keyCode == 32 && status == GAME) {
         rockets.push({
             left: ship.left + 25,
             top: ship.top + 10,
@@ -65,6 +78,8 @@ document.onkeydown = function(e) {
 function DeathDetection() {
     for (var e = 0; e < enemies.length; e++) {
         if (enemies[e].lives <= 0) {
+            if (enemies[e].lives > -100)
+                config.score += enemy.score;
             enemies.splice(e, 1);
         }
     }
@@ -86,7 +101,7 @@ function shipEnemyCollision() {
             (ship.left <= enemies[e].left + enemy.width)
         ) {
             ship.lives -= enemy.damage;
-            enemies[e].lives = -1;
+            enemies[e].lives = -100;
         }
 
     }
@@ -95,7 +110,7 @@ function shipEnemyCollision() {
 function enemyWallCollision() {
     for (var e = 0; e < enemies.length; e++) {
         if (enemies[e].top + enemy.height > 800) {
-            enemies[e].lives = -1;
+            enemies[e].lives = -100;
         }
     }
 }
@@ -167,8 +182,36 @@ function drawship() {
     document.getElementById("ship").style.left = ship.left + "px";
 }
 
-createEnemy();
-loop();
+function reset() {
+    enemies = [];
+    rockets = [];
+    ship = {
+        width: 50,
+        height: 50,
+        top: 700,
+        left: 600,
+        speed: 10,
+        lives: 1
+    };
+    config = {
+        level: 0,
+        score: 0
+    };
+}
+
+function lose() {
+    document.getElementById("menu").style.visibility = "visible";
+    document.getElementById("intro").style.visibility = "hidden";
+    document.getElementById("lose").style.visibility = "visible";
+    document.getElementById("lose").innerHTML =
+        "<p>GAME OVER!!!</p>\
+        <p>YOU SCORED " + config.score +
+        "</p><p>PRESS SPACE TO START AGAIN!!</p>"
+    reset();
+}
+
+// createEnemy();
+// loop();
 
 function loop() {
     drawRocket();
@@ -179,5 +222,8 @@ function loop() {
     shipEnemyCollision();
     enemyWallCollision();
     DeathDetection();
-    setTimeout(loop, 100);
+    if (status == GAME)
+        setTimeout(loop, 100);
+    if (status == LOSE)
+        lose();
 }
