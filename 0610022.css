@@ -1,5 +1,5 @@
 #background {
-    background-image: url('./background.jpg');
+    background-image: url('imgs/background.jpg');
     width: 1200px;
     height: 800px;
 }
@@ -16,7 +16,7 @@
 }
 
 #ship {
-    background-image: url('./ship.png');
+    background-image: url('imgs/ship.png');
     width: 50px;
     height: 50px;
     position: absolute;
@@ -55,7 +55,7 @@
 }
 
 #infoContainer {
-    background-image: url('./transition.jpg');
+    background-image: url('imgs/transition.jpg');
     width: 1200px;
     height: 800px;
     position: absolute;
@@ -92,7 +92,7 @@ progress::-webkit-progress-value {
 }
 
 .enemy {
-    background-image: url('./enemy.png');
+    background-image: url('imgs/enemy.png');
     width: 50px;
     height: 50px;
     position: absolute;
@@ -101,7 +101,7 @@ progress::-webkit-progress-value {
 }
 
 .enemy2 {
-    background-image: url('./enemy2.png');
+    background-image: url('imgs/enemy2.png');
     width: 50px;
     height: 50px;
     position: absolute;
@@ -110,7 +110,7 @@ progress::-webkit-progress-value {
 }
 
 .enemy3 {
-    background-image: url('./enemy3.png');
+    background-image: url('imgs/enemy3.png');
     width: 50px;
     height: 50px;
     position: absolute;
@@ -119,35 +119,35 @@ progress::-webkit-progress-value {
 }
 
 .rocket {
-    background-image: url('./rocket.png');
+    background-image: url('imgs/rocket.png');
     width: 10px;
     height: 16px;
     position: absolute;
 }
 
 .explosion {
-    background-image: url('./explode.png');
+    background-image: url('imgs/explode.png');
     width: 50px;
     height: 50px;
     position: absolute;
 }
 
 .attack {
-    background-image: url('./attack.png');
+    background-image: url('imgs/attack.png');
     width: 16px;
     height: 16px;
     position: absolute;
 }
 
 .bullet {
-    background-image: url('./bullet.png');
+    background-image: url('imgs/bullet.png');
     width: 7px;
     height: 16px;
     position: absolute;
 }
 
 .boss {
-    background-image: url('./boss.png');
+    background-image: url('imgs/boss.png');
     width: 441px;
     height: 321px;
     position: absolute;
@@ -156,7 +156,7 @@ progress::-webkit-progress-value {
 }
 
 .explosion_big {
-    background-image: url('./explode_big.png');
+    background-image: url('imgs/explode_big.png');
     width: 441px;
     height: 364px;
     position: absolute;
