@@ -4,14 +4,14 @@ const enemy = {
     width: 50,
     height: 50,
     damage: 1,
-    speed: 10,
+    speed: 2,
     score: 10
 }
 const rocket = {
     width: 10,
     height: 16,
     damage: 1,
-    speed: 10
+    speed: 30
 }
 
 const MENU = 0;
@@ -23,18 +23,18 @@ var config = {
     level: 1,
     score: 0
 }
-
 var ship = {
     width: 50,
     height: 50,
     top: 700,
     left: 600,
-    speed: 10,
+    speed: 20,
     lives: 1
 }
 var rockets = [];
 var enemies = [];
 var status = MENU;
+var enemySwing = 0;
 
 document.onkeydown = function(e) {
     //<-
@@ -52,26 +52,27 @@ document.onkeydown = function(e) {
         }
     }
     //menu
-    else if (e.keyCode == 32 && (status == MENU || status == LOSE)) {
-        status = GAME;
-        document.getElementById("infoContainer").style.visibility = "hidden";
-        drawship();
-        createEnemy();
-        loop();
-    }
-    //space
-    else if (e.keyCode == 32 && status == GAME) {
-        rockets.push({
-            left: ship.left + 25,
-            top: ship.top + 10,
-            lives: 1
-        });
-        rockets.push({
-            left: ship.left,
-            top: ship.top + 10,
-            lives: 1
-        });
-        drawRocket();
+    else if (e.keyCode == 32) {
+        if (status == MENU) {
+            status = TRANSITION;
+        } else if (status == LOSE) {
+            status = MENU;
+        } else if (status == TRANSITION) {
+            nextLevel();
+            status = GAME;
+        } else if (status == GAME) {
+            rockets.push({
+                left: ship.left + 25,
+                top: ship.top + 10,
+                lives: 1
+            });
+            rockets.push({
+                left: ship.left,
+                top: ship.top + 10,
+                lives: 1
+            });
+            drawRocket();
+        }
     }
 }
 
@@ -90,6 +91,10 @@ function DeathDetection() {
     }
     if (ship.lives <= 0) {
         status = LOSE;
+    }
+    if (enemies.length == 0) {
+        status = TRANSITION;
+        config.level++;
     }
 }
 
@@ -169,8 +174,18 @@ function drawRocket() {
 }
 
 function moveEnemy() {
-    for (var i = 0; i < enemies.length; i++)
+    //console.log(enemySwing);
+    if (enemySwing > 12)
+        enemySwing = -12;
+    for (var i = 0; i < enemies.length; i++) {
         enemies[i].top += enemy.speed;
+        if (enemySwing > 0) {
+            enemies[i].left += enemy.speed * 5;
+        } else {
+            enemies[i].left -= enemy.speed * 5;
+        }
+    }
+    enemySwing++;
 }
 
 function moveRocket() {
@@ -206,12 +221,41 @@ function lose() {
             <p>GAME OVER!!!</p>\
             <p>YOU REACHED LEVEL " + config.level + "</p>\
             <p>YOU SCORED " + config.score + "</p>\
-            <p>PRESS SPACE TO START AGAIN!!</p>\
+            <p>PRESS SPACE TO RESTART THE GAME!!</p>\
         </div>"
+}
+
+function transition() {
+    document.getElementById("infoContainer").style.visibility = "visible";
+    document.getElementById("infoContainer").innerHTML =
+        " <div class='info'>\
+            <p>PREPARE FOR BATTLE</p>\
+            <p>LEVEL " + config.level + " IS COMMING</p>\
+            <p>PRESS SPACE TO CONTINUE!!</p>\
+        </div>"
+}
+
+function nextLevel() {
+    enemies = [];
+    rockets = [];
+    ship.top = 700;
+    ship.left = 600;
+    document.getElementById("infoContainer").style.visibility = "hidden";
+    drawship();
+    createEnemy();
+}
+
+function menu() {
+    document.getElementById("infoContainer").style.visibility = "visible";
+    document.getElementById("infoContainer").innerHTML =
+        "<div class='info'>\
+            <p>WELCOME TO THE GAME</p>\
+            <p>PRESS SPACE TO START!!</p>\
+        </div>";
     reset();
 }
 
-function loop() {
+function gameloop() {
     drawRocket();
     moveRocket();
     drawEnemy();
@@ -220,8 +264,19 @@ function loop() {
     shipEnemyCollision();
     enemyWallCollision();
     DeathDetection();
-    if (status == GAME)
-        setTimeout(loop, 100);
-    if (status == LOSE)
+}
+
+FSM();
+
+function FSM() {
+    console.log(status);
+    if (status == MENU)
+        menu();
+    else if (status == TRANSITION)
+        transition();
+    else if (status == LOSE)
         lose();
+    else if (status == GAME)
+        gameloop();
+    setTimeout(FSM, 100);
 }
