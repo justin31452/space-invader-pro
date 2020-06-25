@@ -4,6 +4,17 @@
     height: 800px;
 }
 
+#status {
+    color: white;
+    top: 750px;
+    left: 1000px;
+    position: absolute;
+}
+
+#countDown {
+    font-size: 100px;
+}
+
 #ship {
     background-image: url('./ship.png');
     width: 50px;
@@ -19,7 +30,19 @@
     position: absolute;
 }
 
+#attackContainer {
+    width: 1200px;
+    height: 800px;
+    position: absolute;
+}
+
 #enemyContainer {
+    width: 1200px;
+    height: 800px;
+    position: absolute;
+}
+
+#explosionContainer {
     width: 1200px;
     height: 800px;
     position: absolute;
@@ -47,7 +70,7 @@ progress::-webkit-progress-value {
 }
 
 .info {
-    margin-top: 30%;
+    margin-top: 20%;
     color: white;
     text-align: center;
     font-size: xx-large;
@@ -83,6 +106,20 @@ progress::-webkit-progress-value {
 .rocket {
     background-image: url('./rocket.png');
     width: 10px;
+    height: 16px;
+    position: absolute;
+}
+
+.explosion {
+    background-image: url('./explode.png');
+    width: 50px;
+    height: 50px;
+    position: absolute;
+}
+
+.attack {
+    background-image: url('./attack.png');
+    width: 16px;
     height: 16px;
     position: absolute;
 }
