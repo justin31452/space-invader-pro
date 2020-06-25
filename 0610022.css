@@ -75,11 +75,20 @@ progress::-webkit-progress-value {
     background-color: greenyellow;
 }
 
-.info {
-    margin-top: 20%;
+.intro {
+    margin-top: 25%;
     color: white;
     text-align: center;
     font-size: xx-large;
+    position: relative;
+}
+
+.info {
+    margin-top: 15%;
+    color: white;
+    text-align: center;
+    font-size: xx-large;
+    position: relative;
 }
 
 .enemy {
@@ -134,5 +143,21 @@ progress::-webkit-progress-value {
     background-image: url('./bullet.png');
     width: 7px;
     height: 16px;
+    position: absolute;
+}
+
+.boss {
+    background-image: url('./boss.png');
+    width: 441px;
+    height: 321px;
+    position: absolute;
+    top: 100px;
+    left: 350px;
+}
+
+.explosion_big {
+    background-image: url('./explode_big.png');
+    width: 441px;
+    height: 364px;
     position: absolute;
 }

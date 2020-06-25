@@ -66,7 +66,24 @@ var enemySwing = 0;
 var transitionCountDown = 3;
 var transitionCountDownCnt = 0;
 var attackCnt = 0;
+var explosionBigLives = 50;
+var explosionBigAlive = false;
 
+var boss = {
+    width: 441,
+    height: 321,
+    speed: 5,
+    verticalSwing: 0,
+    verticalSwingRange: 50,
+    horizontalSwing: 0,
+    horizontalSwingRange: 90,
+    top: 50,
+    left: 150,
+    lives: 0,
+    maxLives: 10000,
+    attackRate: 30,
+    alive: false
+}
 
 var keys = {
     space: 0,
@@ -129,7 +146,9 @@ window.addEventListener("keydown", function keydown(e) {
         keys.space = 1;
         if (status == MENU) {
             status = TRANSITION;
-        } else if (status == (LOSE || WIN)) {
+        } else if (status == LOSE) {
+            status = MENU;
+        } else if (status == WIN) {
             status = MENU;
         } else if (status == GAME) {
             if (mutex.space == 1) {
@@ -142,6 +161,17 @@ window.addEventListener("keydown", function keydown(e) {
     if (e.keyCode == 78) {
         status = TRANSITION;
         config.level++;
+    }
+    //L
+    if (e.keyCode == 76) {
+        if (ship.level < 5)
+            ship.level++;
+        ship.lives = ship.maxLives;
+    }
+    //K
+    if (e.keyCode == 75) {
+        if (config.level == 5)
+            boss.lives = 10;
     }
 });
 
@@ -162,8 +192,8 @@ function showStatus() {
     document.getElementById("status").innerHTML = "";
     document.getElementById("status").innerHTML += (
         "<p>SHIP LEVEL: " + ship.level + " </p>\
-        LIFES : <progress id='health' value='" + ship.lives + "' max='" + ship.maxLives + "'></progress>\
-        EXPS  : <progress id='exp' value='" + ship.exp + "' max='" + expTable[ship.level] + "'></progress>");
+        LIFE : <progress id='health' value='" + ship.lives + "' max='" + ship.maxLives + "'></progress><p></p>\
+        EXP  : <progress id='exp' value='" + ship.exp + "' max='" + expTable[ship.level] + "'></progress>");
     //console.log(expTable[ship.level]);
 }
 
@@ -174,15 +204,15 @@ function shipLevel() {
         ship.lives += (maxLifeTable[ship.level] - ship.maxLives);
     }
     if (ship.level == 1) {
-        ship.speed = 3;
+        ship.speed = 8;
         ship.maxLives = 3;
     }
     if (ship.level == 2) {
-        ship.speed = 5;
+        ship.speed = 8;
         ship.maxLives = 4;
     }
     if (ship.level == 3) {
-        ship.speed = 8;
+        ship.speed = 11;
         ship.maxLives = 5;
     }
     if (ship.level == 4) {
@@ -256,9 +286,13 @@ function DeathDetection() {
     if (ship.lives <= 0) {
         status = LOSE;
     }
-    if (enemies.length + enemies2.length + enemies3.length + explosions.length == 0) {
-        status = TRANSITION;
+    if (config.level == 5 && boss.lives <= 0) {
+        attacks = [];
+        boss.alive = false;
+    }
+    if (enemies.length + enemies2.length + enemies3.length + explosions.length <= 0 && !boss.alive && !explosionBigAlive) {
         config.level++;
+        status = TRANSITION;
     }
     for (var i = 0; i < explosions.length; i++) {
         if (explosions[i].lives <= 0)
@@ -396,6 +430,18 @@ function enemyRocketCollision() {
             }
         }
     }
+    if (config.level == 5) {
+        for (var r = 0; r < rockets.length; r++) {
+            if ((rockets[r].top <= boss.top + boss.height) &&
+                (rockets[r].top + rocket.height >= boss.top) &&
+                (rockets[r].left + rocket.width >= boss.left) &&
+                (rockets[r].left <= boss.left + boss.width)
+            ) {
+                rockets[r].lives--;
+                boss.lives -= rocket.damage;
+            }
+        }
+    }
 }
 
 function enemyBulletCollision() {
@@ -437,10 +483,22 @@ function enemyBulletCollision() {
             }
         }
     }
+    if (config.level == 5) {
+        for (var r = 0; r < bullets.length; r++) {
+            if ((bullets[r].top <= boss.top + boss.height) &&
+                (bullets[r].top + bullet.height >= boss.top) &&
+                (bullets[r].left + bullet.width >= boss.left) &&
+                (bullets[r].left <= boss.left + boss.width)
+            ) {
+                bullets[r].lives--;
+                boss.lives -= bullet.damage;
+            }
+        }
+    }
 }
 
 function createEnemy() {
-    console.log(config.level);
+    //console.log(config.level);
     if (config.level == 1) {
         var lft = 200;
         var tp = 250;
@@ -526,6 +584,18 @@ function createEnemy() {
             lft += 100;
         }
 
+        var lft = 200;
+        var tp = 320;
+        for (var i = 0; i < numEnemies; i++) {
+            enemies.push({
+                left: lft,
+                top: tp,
+                lives: enemy.lives,
+                id: i
+            });
+            lft += 100;
+        }
+
         lft = 200;
         tp = 175;
         for (var i = 0; i < numEnemies; i++) {
@@ -549,6 +619,22 @@ function createEnemy() {
             });
             lft += 100;
         }
+
+        lft = 200;
+        tp = 25;
+        for (var i = 0; i < numEnemies; i++) {
+            enemies3.push({
+                left: lft,
+                top: tp,
+                lives: enemy3.lives,
+                id: i
+            });
+            lft += 100;
+        }
+    } else if (config.level == 5) {
+        boss.lives = boss.maxLives;
+        boss.alive = true;
+        explosionBigAlive = true;
     }
 }
 
@@ -568,6 +654,24 @@ function createAttack() {
             lives: 1
         })
     }
+    if (config.level == 5 && boss.alive) {
+        if (attackCnt == boss.attackRate) {
+            attackCnt = 0;
+            attacks.push({
+                left: boss.left + 100,
+                top: boss.top + 321,
+                lives: 1
+            }, {
+                left: boss.left + 220,
+                top: boss.top + 321,
+                lives: 1
+            }, {
+                left: boss.left + 340,
+                top: boss.top + 321,
+                lives: 1
+            })
+        }
+    }
 }
 
 function createRocket() {
@@ -586,48 +690,49 @@ function createRocket() {
         top: ship.top + 10,
         lives: 1
     });
-    //if (ship.level > 2)
-    rockets.push({
-        left: ship.left + 25,
-        top: ship.top + 10,
-        lives: 1
-    }, {
-        left: ship.left,
-        top: ship.top + 10,
-        lives: 1
-    });
-    //if (ship.level > 3)
-    bullets.push({
-        left: ship.left + 18,
-        top: ship.top + 10,
-        lives: 1
-    }, {
-        left: ship.left + 6,
-        top: ship.top + 10,
-        lives: 1
-    });
-    //if (ship.level > 4)
-    rockets.push({
-        left: ship.left + 35,
-        top: ship.top + 10,
-        lives: 1
-    }, {
-        left: ship.left - 11,
-        top: ship.top + 10,
-        lives: 1
-    });
+    if (ship.level > 2) {
+        rockets.push({
+            left: ship.left + 25,
+            top: ship.top + 10,
+            lives: 1
+        }, {
+            left: ship.left,
+            top: ship.top + 10,
+            lives: 1
+        });
+        //if (ship.level > 3)
+        bullets.push({
+            left: ship.left + 35,
+            top: ship.top + 10,
+            lives: 1
+        }, {
+            left: ship.left - 11,
+            top: ship.top + 10,
+            lives: 1
+        });
+    }
+    if (ship.level > 4)
+        rockets.push({
+            left: ship.left + 50,
+            top: ship.top + 10,
+            lives: 1
+        }, {
+            left: ship.left - 26,
+            top: ship.top + 10,
+            lives: 1
+        });
     drawRocket();
     if (keys.space) {
-        // if (ship.level == 1)
-        //     setTimeout(createRocket, 200);
-        // if (ship.level == 2)
-        //     setTimeout(createRocket, 200);
-        // if (ship.level == 3)
-        //     setTimeout(createRocket, 100);
-        // if (ship.level == 4)
-        //     setTimeout(createRocket, 100);
-        // if (ship.level == 5)
-        setTimeout(createRocket, 50);
+        if (ship.level == 1)
+            setTimeout(createRocket, 150);
+        if (ship.level == 2)
+            setTimeout(createRocket, 150);
+        if (ship.level == 3)
+            setTimeout(createRocket, 100);
+        if (ship.level == 4)
+            setTimeout(createRocket, 100);
+        if (ship.level == 5)
+            setTimeout(createRocket, 50);
     } else
         mutex.space = 1;
 }
@@ -649,8 +754,21 @@ function drawExplosion() {
         var lft = explosions[i].left + "px";
         var tp = explosions[i].top + "px";
         document.getElementById("explosionContainer").innerHTML += (
-            "<div class='explosion' style='left:" + lft + ";top:" + tp + ";'>");
+            "<div class='explosion' style='left:" + lft + ";top:" + tp + ";'></div>");
         explosions[i].lives--;
+    }
+    if (config.level == 5 && !boss.alive) {
+        explosionBigAlive = true;
+        explosionBigLives--;
+        console.log("explosion");
+        if (explosionBigLives <= 0) {
+            explosionBigAlive = false;
+        }
+        document.getElementById("explosionContainer").innerHTML = "";
+        var lft = boss.left + "px";
+        var tp = (boss.top - 20) + "px";
+        document.getElementById("explosionContainer").innerHTML += (
+            "<div class='explosion_big' style='left:" + lft + ";top:" + tp + ";'></div>");
     }
 }
 
@@ -676,6 +794,13 @@ function drawEnemy() {
         document.getElementById("enemyContainer").innerHTML += (
             "<div class='enemy3' style='left:" + lft + ";top:" + tp + ";'>\
             <progress id='h3" + i + "' value='" + enemies3[i].lives + "' max='" + enemy3.lives + "'></progress></div>");
+    }
+    if (config.level == 5 && boss.lives > 0) {
+        var lft = boss.left + "px";
+        var tp = boss.top + "px";
+        document.getElementById("enemyContainer").innerHTML += (
+            "<div class='boss' style='left:" + lft + ";top:" + tp + ";'>\
+            <progress id='hboss' value='" + boss.lives + "' max='" + boss.maxLives + "'></progress></div>");
     }
 }
 
@@ -708,7 +833,7 @@ function moveAttack() {
 function moveEnemy() {
     //console.log(enemySwing);
     if (enemySwing > swingDist)
-        enemySwing = -swingDist - 20;
+        enemySwing = -swingDist;
     for (var i = 0; i < enemies.length; i++) {
         enemies[i].top += enemy.speed;
         if (enemySwing > 0) {
@@ -734,6 +859,25 @@ function moveEnemy() {
         } else {
             enemies3[i].left -= swingSpeed;
         }
+    }
+
+    if (config.level == 5 && boss.lives >= 0) {
+        if (boss.verticalSwing > boss.verticalSwingRange)
+            boss.verticalSwing = -boss.verticalSwingRange;
+        if (boss.horizontalSwing > boss.horizontalSwingRange)
+            boss.horizontalSwing = -boss.horizontalSwingRange;
+        if (boss.horizontalSwing > 0) {
+            boss.left += boss.speed;
+        } else {
+            boss.left -= boss.speed;
+        }
+        if (boss.verticalSwing > 0) {
+            boss.top += swingSpeed;
+        } else {
+            boss.top -= swingSpeed;
+        }
+        boss.verticalSwing++;
+        boss.horizontalSwing++;
     }
 
     enemySwing++;
@@ -801,6 +945,9 @@ function win() {
 
 function transition() {
     transitionCountDownCnt++;
+    if (config.level == 6) {
+        status = WIN;
+    }
     if (transitionCountDownCnt == 60) {
         transitionCountDown--;
         transitionCountDownCnt = 0;
@@ -815,13 +962,11 @@ function transition() {
             <div id='countDown'>" + transitionCountDown + "</div\
         </div>";
     if (transitionCountDown == 0) {
-        if (config.level < 5) {
+        if (config.level < 6) {
             nextLevel();
             status = GAME;
             //console.log(document.getElementById("infoContainer").style.visibility);
             transitionCountDown = 3;
-        } else {
-            status = WIN;
         }
     }
 }
@@ -836,6 +981,7 @@ function nextLevel() {
     attacks = [];
     ship.top = 700;
     ship.left = 600;
+    attackCnt = 0;
     document.getElementById("infoContainer").style.visibility = "hidden";
     drawship();
     createEnemy();
@@ -844,7 +990,7 @@ function nextLevel() {
 function menu() {
     document.getElementById("infoContainer").style.visibility = "visible";
     document.getElementById("infoContainer").innerHTML =
-        "<div class='info'>\
+        "<div class='intro'>\
             <p>WELCOME TO THE GAME</p>\
             <p>PRESS SPACE TO START!!</p>\
         </div>";
@@ -873,7 +1019,12 @@ function gameloop() {
     bulletWallCollision();
     shipAttackCollision();
     DeathDetection();
-    //console.log(ship.lives);
+    //console.log(attacks.length);
+    // console.log(explosionBigLives);
+    // console.log(status);
+    // console.log(config.level);
+    console.log(explosionBigLives);
+    // console.log(boss.lives);
 }
 
 FSM();
