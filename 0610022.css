@@ -32,6 +32,20 @@
     position: absolute;
 }
 
+progress {
+    width: 50px;
+    height: 5px;
+    background-color: lightslategray;
+}
+
+progress::-webkit-progress-bar {
+    background-color: lightgrey;
+}
+
+progress::-webkit-progress-value {
+    background-color: greenyellow;
+}
+
 .info {
     margin-top: 30%;
     color: white;

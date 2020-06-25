@@ -1,12 +1,13 @@
-const numEnemies = 16;
-const rowEnemies = 2;
+const numEnemies = 8;
+const swingSpeed = 2;
+const swingDist = 75;
 const enemy = {
     width: 50,
     height: 50,
     damage: 1,
-    speed: 0.5,
+    speed: 0.8,
     score: 10,
-    lives: 1
+    lives: 4
 }
 const enemy2 = {
     width: 50,
@@ -14,7 +15,7 @@ const enemy2 = {
     damage: 3,
     speed: 0.3,
     score: 20,
-    lives: 3
+    lives: 8
 }
 const enemy3 = {
     width: 50,
@@ -22,13 +23,13 @@ const enemy3 = {
     damage: 1,
     speed: 0.1,
     score: 30,
-    lives: 1
+    lives: 4
 }
 const rocket = {
     width: 10,
     height: 16,
     damage: 1,
-    speed: 10
+    speed: 30
 }
 
 const MENU = 0;
@@ -45,11 +46,14 @@ var ship = {
     height: 50,
     top: 700,
     left: 600,
-    speed: 2,
-    lives: 1
+    speed: 30,
+    lives: 1,
+    fireRateLvl: 4
 }
 var rockets = [];
 var enemies = [];
+var enemies2 = [];
+var enemies3 = [];
 var status = MENU;
 var enemySwing = 0;
 
@@ -67,7 +71,7 @@ var mutex = {
 
 window.addEventListener("keydown", function keydown(e) {
     //<-
-    console.log("onkeydown");
+    //console.log("onkeydown");
     if (e.keyCode == 37) {
         keys.left = 1;
         if (mutex.left == 1) {
@@ -119,6 +123,13 @@ function DeathDetection() {
             enemies.splice(e, 1);
         }
     }
+    for (var e = 0; e < enemies2.length; e++) {
+        if (enemies2[e].lives <= 0) {
+            if (enemies2[e].lives > -100)
+                config.score += enemy2.score;
+            enemies2.splice(e, 1);
+        }
+    }
     for (var r = 0; r < rockets.length; r++) {
         if (rockets[r].lives <= 0) {
             rockets.splice(r, 1);
@@ -127,7 +138,7 @@ function DeathDetection() {
     if (ship.lives <= 0) {
         status = LOSE;
     }
-    if (enemies.length == 0) {
+    if (enemies.length == 0 && enemies2.length == 0) {
         status = TRANSITION;
         config.level++;
     }
@@ -143,7 +154,27 @@ function shipEnemyCollision() {
             ship.lives -= enemy.damage;
             enemies[e].lives = -100;
         }
+    }
+    for (var e = 0; e < enemies2.length; e++) {
+        if ((ship.top <= enemies2[e].top + enemy2.height) &&
+            (ship.top + ship.height >= enemies2[e].top) &&
+            (ship.left + ship.width >= enemies2[e].left) &&
+            (ship.left <= enemies2[e].left + enemy2.width)
+        ) {
+            ship.lives -= enemy2.damage;
+            enemies2[e].lives = -100;
+        }
+    }
+}
 
+function rocketWallCollision() {
+
+    //console.log("rocket wall collide");
+    for (var r = 0; r < rockets.length; r++) {
+        if (rockets[r].top < 0) {
+            rockets[r].lives = -100;
+            console.log("rocket wall collide");
+        }
     }
 }
 
@@ -151,6 +182,11 @@ function enemyWallCollision() {
     for (var e = 0; e < enemies.length; e++) {
         if (enemies[e].top + enemy.height > 800) {
             enemies[e].lives = -100;
+        }
+    }
+    for (var e = 0; e < enemies2.length; e++) {
+        if (enemies2[e].top + enemy2.height > 800) {
+            enemies2[e].lives = -100;
         }
     }
 }
@@ -168,24 +204,47 @@ function enemyRocketCollision() {
             }
         }
     }
+
+    for (var e = 0; e < enemies2.length; e++) {
+        for (var r = 0; r < rockets.length; r++) {
+            if ((rockets[r].top <= enemies2[e].top + enemy2.height) &&
+                (rockets[r].top + rocket.height >= enemies2[e].top) &&
+                (rockets[r].left + rocket.width >= enemies2[e].left) &&
+                (rockets[r].left <= enemies2[e].left + enemy2.width)
+            ) {
+                rockets[r].lives--;
+                enemies2[e].lives -= rocket.damage;
+            }
+        }
+    }
 }
 
 function createEnemy() {
     var lft = 200;
-    var tp = 100;
+    var tp = 175;
     for (var i = 0; i < numEnemies; i++) {
         enemies.push({
             left: lft,
             top: tp,
-            lives: 1
+            lives: enemy.lives,
+            id: i
         });
         lft += 100;
-        if ((i + 1) % (numEnemies / rowEnemies) == 0) {
-            lft = 200;
-            tp += 75;
-        }
+    }
+
+    var lft = 200;
+    var tp = 100;
+    for (var i = 0; i < numEnemies; i++) {
+        enemies2.push({
+            left: lft,
+            top: tp,
+            lives: enemy2.lives,
+            id: i
+        });
+        lft += 100;
     }
 }
+
 
 function createRocket() {
     rockets.push({
@@ -200,7 +259,7 @@ function createRocket() {
     });
     drawRocket();
     if (keys.space)
-        setTimeout(createRocket, 250);
+        setTimeout(createRocket, 15);
     else
         mutex.space = 1;
 }
@@ -211,7 +270,22 @@ function drawEnemy() {
         var lft = enemies[i].left + "px";
         var tp = enemies[i].top + "px";
         document.getElementById("enemyContainer").innerHTML += (
-            "<div class='enemy3' style='left:" + lft + ";top:" + tp + ";'></div>");
+            "<div class='enemy' style='left:" + lft + ";top:" + tp + ";'>\
+            <progress id='h1" + i + "' value='" + enemies[i].lives + "' max='4'></progress></div>");
+    }
+    for (var i = 0; i < enemies2.length; i++) {
+        var lft = enemies2[i].left + "px";
+        var tp = enemies2[i].top + "px"
+        document.getElementById("enemyContainer").innerHTML += (
+            "<div class='enemy2' style='left:" + lft + ";top:" + tp + ";'>\
+            <progress id='h2'" + i + " value='" + enemies2[i].lives + "' max='8'></progress></div>");
+    }
+    for (var i = 0; i < enemies3.length; i++) {
+        var lft = enemies3[i].left + "px";
+        var tp = enemies3[i].top + "px";
+        document.getElementById("enemyContainer").innerHTML += (
+            "<div class='enemy3' style='left:" + lft + ";top:" + tp + ";'>\
+            <progress id='h3" + i + "' value='" + enemies3[i].lives + "' max='4'></progress></div>");
     }
 }
 
@@ -228,16 +302,26 @@ function drawRocket() {
 
 function moveEnemy() {
     //console.log(enemySwing);
-    if (enemySwing > 50)
-        enemySwing = -50;
+    if (enemySwing > swingDist)
+        enemySwing = -swingDist - 20;
     for (var i = 0; i < enemies.length; i++) {
         enemies[i].top += enemy.speed;
         if (enemySwing > 0) {
-            enemies[i].left += enemy.speed * 5;
+            enemies[i].left += swingSpeed;
         } else {
-            enemies[i].left -= enemy.speed * 5;
+            enemies[i].left -= swingSpeed;
         }
     }
+
+    for (var i = 0; i < enemies2.length; i++) {
+        enemies2[i].top += enemy2.speed;
+        if (enemySwing > 0) {
+            enemies2[i].left += swingSpeed;
+        } else {
+            enemies2[i].left -= swingSpeed;
+        }
+    }
+
     enemySwing++;
 }
 
@@ -252,7 +336,7 @@ function moveShip(dir) {
             ship.left -= ship.speed;
             drawship();
             if (keys.left)
-                setTimeout(moveShip, 100, dir);
+                setTimeout(moveShip, 16, dir);
             else
                 mutex.left = 1;
         }
@@ -261,7 +345,7 @@ function moveShip(dir) {
             ship.left += ship.speed;
             drawship();
             if (keys.right)
-                setTimeout(moveShip, 100, dir);
+                setTimeout(moveShip, 16, dir);
             else
                 mutex.right = 1;
         }
@@ -275,14 +359,17 @@ function drawship() {
 function reset() {
     enemies = [];
     rockets = [];
+    enemies2 = [];
+    enemies3 = [];
     ship = {
         width: 50,
         height: 50,
         top: 700,
         left: 600,
         speed: 10,
-        lives: 1
-    };
+        lives: 1,
+        fireRate: 250
+    }
     config = {
         level: 1,
         score: 0
@@ -312,6 +399,8 @@ function transition() {
 
 function nextLevel() {
     enemies = [];
+    enemies2 = [];
+    enemies3 = [];
     rockets = [];
     ship.top = 700;
     ship.left = 600;
@@ -338,6 +427,7 @@ function gameloop() {
     enemyRocketCollision();
     shipEnemyCollision();
     enemyWallCollision();
+    rocketWallCollision();
     DeathDetection();
 }
 
