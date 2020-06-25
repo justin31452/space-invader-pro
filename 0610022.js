@@ -4,8 +4,22 @@ const enemy = {
     width: 50,
     height: 50,
     damage: 1,
-    speed: 2,
+    speed: 5,
     score: 10
+}
+const enemy2 = {
+    width: 50,
+    height: 50,
+    damage: 3,
+    speed: 3,
+    score: 20
+}
+const enemy3 = {
+    width: 50,
+    height: 50,
+    damage: 1,
+    speed: 2,
+    score: 30
 }
 const rocket = {
     width: 10,
@@ -158,7 +172,7 @@ function drawEnemy() {
         var lft = enemies[i].left + "px";
         var tp = enemies[i].top + "px";
         document.getElementById("enemyContainer").innerHTML += (
-            "<div class='enemy' style='left:" + lft + ";top:" + tp + ";'></div>");
+            "<div class='enemy3' style='left:" + lft + ";top:" + tp + ";'></div>");
     }
 }
 
@@ -269,7 +283,7 @@ function gameloop() {
 FSM();
 
 function FSM() {
-    console.log(status);
+    //console.log(status);
     if (status == MENU)
         menu();
     else if (status == TRANSITION)
