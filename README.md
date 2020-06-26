@@ -27,7 +27,7 @@ Simply download whole repository, and then execute the html file with newer gene
 
 System Structure
 ---
-* Finite State Machine
+* **Finite State Machine**
 ![](https://i.imgur.com/wFVYNLC.jpg)
 As figure shown above, there are 5 states.
     1. MENU state: homepage showing welcome message.
@@ -35,10 +35,9 @@ As figure shown above, there are 5 states.
     3. GAME state: keep calling gameloop() for every 16 miliseconds, doing things like draw enemy, collision detection etc.
     4. LOSE state: showing your scoring and reached level.
     5. WIN state: showing congratulation message.
-* HTML structure
+* **HTML structure**
 
-
-
+    First of all, there is a div in size 1200*800 containing gaming background image. On top of that, there are layers of containers contain different classes of objects loke rockets, enemies. On top of everything, there's a layer containing text message and a different background image, and it's hidden in the GAME state.
 
 
 ## Appendix and FAQ
