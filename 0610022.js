@@ -7,7 +7,7 @@ const enemy = {
     height: 50,
     damage: 3,
     speed: 1.2,
-    score: 10,
+    score: 20,
     lives: 4
 }
 const enemy2 = {
@@ -15,7 +15,7 @@ const enemy2 = {
     height: 50,
     damage: 10,
     speed: 0.3,
-    score: 20,
+    score: 10,
     lives: 15
 }
 const enemy3 = {
@@ -499,7 +499,7 @@ function enemyBulletCollision() {
 
 function createEnemy() {
     //console.log(config.level);
-    if (config.level == 1) {
+    if (config.level == 2) {
         var lft = 200;
         var tp = 250;
         for (var i = 0; i < numEnemies; i++) {
@@ -523,7 +523,7 @@ function createEnemy() {
             });
             lft += 100;
         }
-    } else if (config.level == 2) {
+    } else if (config.level == 1) {
         var lft = 200;
         var tp = 250;
         for (var i = 0; i < numEnemies; i++) {
