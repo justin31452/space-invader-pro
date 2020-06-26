@@ -17,11 +17,42 @@ How to use
 ---
 Simply download whole repository, and then execute the html file with newer generation web browsers like chrome or safari. Have fun!
 
+Game Features
+---
+*  **Weapons**
+![](https://i.imgur.com/jQw5l7q.png)
+![](https://i.imgur.com/IXaGwIj.png)\
+    each bullet damage = 1 speed = 50\
+    each rocket damage = 4 speed = 20
+
+* **Enemies**
+![](https://i.imgur.com/t47apSp.png)
+![](https://i.imgur.com/Irgq1xP.png)
+![](https://i.imgur.com/oEmNOjg.png)
+![](https://i.imgur.com/sr79kJT.png)\
+    enemy1 : damage: 10 speed: 0.3 score: 10 lives: 15 (basic enemy)\
+    enemy2 : damage: 3 speed: 1.2 score: 20 lives: 4(fast enemy)\
+    enemy3 : damage: 1 speed: 0.1 score: 30 lives: 10(archer enemy)\
+    enemy4 : ???
+    
+* **Ship Level**
+![](https://i.imgur.com/cRjHM2h.png)\
+    level1: bullets:3 rocket:0 firerate:1/150 speed:8 maxLives:3\
+    level2: bullets:3 rocket:0 firerate:1/150 speed:8 maxLives:4\
+    level3: bullets:5 rocket:2 firerate:1/100 speed:11 maxLives:5\
+    level4: bullets:5 rocket:2 firerate:1/100 speed:11 maxLives:7\
+    level5: bullets:5 rocket:4 firerate:1/50  speed:15 maxLives:10
+    
+* **Other Features**\
+    1.health bar: made of progress bar.\
+    2.explosion effect
+
 
 System Structure
 ---
 * **Finite State Machine**
 ![](https://i.imgur.com/wFVYNLC.jpg)
+
 As figure shown above, there are 5 states.
     1. MENU state: homepage showing welcome message.
     2. TRANSITION state: a state which would count down 3 seconds, and then proceed to GAME state.
