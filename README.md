@@ -5,14 +5,7 @@ disqus: hackmd
 
 Space Invader Pro
 ===
-![downloads](https://img.shields.io/github/downloads/atom/atom/total.svg)
-![build](https://img.shields.io/appveyor/ci/:user/:repo.svg)
-![chat](https://img.shields.io/discord/:serverId.svg)
 
-
-
-
-[TOC]
 
 ## Overview
 A classic space invader game with 5 different levels and 4 different types of enemies! Written in pure Javascript.
@@ -36,8 +29,15 @@ As figure shown above, there are 5 states.
     4. LOSE state: showing your scoring and reached level.
     5. WIN state: showing congratulation message.
 * **HTML structure**
+![](https://i.imgur.com/5Mbh4rg.jpg)
 
     First of all, there is a div in size 1200*800 containing gaming background image. On top of that, there are layers of containers contain different classes of objects loke rockets, enemies. On top of everything, there's a layer containing text message and a different background image, and it's hidden in the GAME state.
+
+* **MOVE function**
+![](https://i.imgur.com/JRxGg5Q.jpg)
+
+    Due to the debouncing design of keyboard & everything, it's hard to move things smoothly via keyDown. Thus, I set another keydown function that has negative edge only when keyUp occurs. On the other hand, I set a mutex lock to lock the MOVE function, which ensures that there are exactly one MOVE function executing at a time.
+
 
 
 ## Appendix and FAQ
