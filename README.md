@@ -61,7 +61,7 @@ As figure shown above, there are 5 states.\
     5. WIN state: showing congratulation message.
 * **HTML structure**
 ![](https://i.imgur.com/5Mbh4rg.jpg)\
-    First of all, there is a div in size 1200*800 containing gaming background image. On top of that, there are layers of containers contain different classes of objects loke rockets, enemies. On top of everything, there's a layer containing text message and a different background image, and it's hidden in the GAME state.
+    First of all, there is a div in size 1200*800 containing gaming background image. On top of that, there are layers of containers contain different classes of objects like rockets, enemies. On top of everything, there's a layer containing text message and a different background image, and it's hidden in the GAME state.
 
 * **MOVE function**
 ![](https://i.imgur.com/JRxGg5Q.jpg)\
