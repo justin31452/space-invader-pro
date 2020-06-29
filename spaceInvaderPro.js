@@ -68,6 +68,7 @@ var transitionCountDownCnt = 0;
 var attackCnt = 0;
 var explosionBigLives = 50;
 var explosionBigAlive = false;
+var IsEnemyWallCollision = false;
 
 var boss = {
     width: 441,
@@ -105,6 +106,7 @@ function reset() {
     explosions = [];
     attacks = [];
     bullets = [];
+    IsEnemyWallCollision = false;
     ship = {
         width: 50,
         height: 50,
@@ -283,7 +285,7 @@ function DeathDetection() {
             attacks.splice(i, 1);
         }
     }
-    if (ship.lives <= 0) {
+    if (ship.lives <= 0 || IsEnemyWallCollision) {
         status = LOSE;
     }
     if (config.level == 5 && boss.lives <= 0) {
@@ -377,16 +379,19 @@ function enemyWallCollision() {
     for (var e = 0; e < enemies.length; e++) {
         if (enemies[e].top + enemy.height > 800) {
             enemies[e].lives = -100;
+            IsEnemyWallCollision = true;
         }
     }
     for (var e = 0; e < enemies2.length; e++) {
         if (enemies2[e].top + enemy2.height > 800) {
             enemies2[e].lives = -100;
+            IsEnemyWallCollision = true;
         }
     }
     for (var e = 0; e < enemies3.length; e++) {
         if (enemies3[e].top + enemy3.height > 800) {
             enemies3[e].lives = -100;
+            IsEnemyWallCollision = true;
         }
     }
 }
